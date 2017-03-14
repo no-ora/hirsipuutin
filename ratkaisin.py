@@ -17,7 +17,7 @@ try:
     status = input()
     while status:
         for letter, frequency in guess_order:
-            print(letter)
+            print(letter.encode('utf8'))
             result = input()
             status = input()
             if status.startswith('WIN') or status.startswith('LOSE') or not status:
