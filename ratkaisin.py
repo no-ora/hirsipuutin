@@ -24,11 +24,17 @@ try:
         frequencies = [(letter, sum(word.count(letter) for word in words)) for letter in letters]
         guess_order = sorted(frequencies, key=lambda a: a[1], reverse=True)
         while True:
-            # guess next letter
-            letter = guess_order[index][0]
-            index += 1
-            print(letter)
-            guessed_letters.append(letter)
+            # if only one word left, guess that
+            if len(words) == 1:
+                print(words[0])
+            
+            # else guess next letter
+            else:
+                letter = guess_order[index][0]
+                index += 1
+                print(letter)
+                guessed_letters.append(letter)
+            
             result = input()
             status = input()
 
@@ -54,13 +60,17 @@ try:
                 # filter words and count new frequencies
                 words = list(filter(r.match, words))
 
-                # ignore letters that have already been guessed
-                letters = {letter for word in words for letter in word if letter not in guessed_letters}
-                frequencies = [(letter, sum(word.count(letter) for word in words)) for letter in letters]
-                guess_order = sorted(frequencies, key=lambda a: a[1], reverse=True)
+            # if missed, filter words with incorrect letters
+            if result.startswith('MISS'):
+                words = list(filter(lambda w: letter not in w, words))
 
-                # start from the beginning of the new guess_order
-                index = 0
+            # ignore letters that have already been guessed
+            letters = {letter for word in words for letter in word if letter not in guessed_letters}
+            frequencies = [(letter, sum(word.count(letter) for word in words)) for letter in letters]
+            guess_order = sorted(frequencies, key=lambda a: a[1], reverse=True)
+
+            # start from the beginning of the new guess_order
+            index = 0
 
 except EOFError:
     pass
