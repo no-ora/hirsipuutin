@@ -1,11 +1,13 @@
 # Simple hangman solver, guesses letters in order of frequency
 import re
+import sys
 print('noora')
 
 words = []
 
 word = input().strip()
 while word:
+    word = word.encode('latin-1').decode('utf-8')
     words.append(word)
     word = input().strip()
 
@@ -13,6 +15,7 @@ original_words = words
 
 try:
     status = input()
+    status = status.encode('latin-1').decode('utf-8')
     while status:
         index = 0
         words = original_words
@@ -26,21 +29,24 @@ try:
         while True:
             # if only one word left, guess that
             if len(words) == 1:
-                print(words[0])
+                sys.stdout.buffer.write((words[0] + '\n').encode('utf-8'))
             
             # else guess next letter
             else:
                 letter = guess_order[index][0]
                 index += 1
-                print(letter)
+                sys.stdout.buffer.write((letter + '\n').encode('utf-8'))
                 guessed_letters.append(letter)
             
             result = input()
+            result = result.encode('latin-1').decode('utf-8')
             status = input()
+            status = status.encode('latin-1').decode('utf-8')
 
             # when winning or losing and starting a new game prints three lines
             if status.startswith('WIN') or status.startswith('LOSE') or not status:
                 status = input()
+                status = status.encode('latin-1').decode('utf-8')
                 break
 
             # if hit, filter words with correct regex
