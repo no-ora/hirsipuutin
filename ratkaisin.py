@@ -3,6 +3,9 @@ import re
 import sys
 print('noora')
 
+MAX_MISSES = 8
+
+
 words = []
 
 word = input().strip()
@@ -19,6 +22,7 @@ try:
     while status:
         index = 0
         words = original_words
+        guesses_left = MAX_MISSES
 
         # filter words with correct lenght
         words = [word for word in words if len(word) == len(status)]
@@ -27,10 +31,11 @@ try:
         frequencies = [(letter, sum(word.count(letter) for word in words)) for letter in letters]
         guess_order = sorted(frequencies, key=lambda a: a[1], reverse=True)
         while True:
-            # if only one word left, guess that
-            if len(words) == 1:
+            word_count = len(words)
+
+            # if three or less words left, guess that
+            if len(words) <= 3 and len(words) <= guesses_left:
                 sys.stdout.buffer.write((words[0] + '\n').encode('utf-8'))
-            
             # else guess next letter
             else:
                 letter = guess_order[index][0]
@@ -69,15 +74,21 @@ try:
 
             # if missed, filter words with incorrect letters
             if result.startswith('MISS'):
-                words = list(filter(lambda w: letter not in w, words))
+                if len(words) <= 3 and len(words) <= guesses_left:
+                    del words[0]
+                else:
+                    guesses_left -= 1
+                    words = list(filter(lambda w: letter not in w, words))
 
             # ignore letters that have already been guessed
             letters = {letter for word in words for letter in word if letter not in guessed_letters}
-            frequencies = [(letter, sum(word.count(letter) for word in words)) for letter in letters]
-            guess_order = sorted(frequencies, key=lambda a: a[1], reverse=True)
+            # count new frequencies if the number of words has changed
+            if len(words) < word_count:
+                frequencies = [(letter, sum(word.count(letter) for word in words)) for letter in letters]
+                guess_order = sorted(frequencies, key=lambda a: a[1], reverse=True)
 
-            # start from the beginning of the new guess_order
-            index = 0
+                # start from the beginning of the new guess_order
+                index = 0
 
 except EOFError:
     pass
