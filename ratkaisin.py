@@ -51,13 +51,14 @@ try:
 
             # if hit, filter words with correct regex
             if result.startswith('HIT'):
-                regex = '.{'
+                remaining_letters = '[' + ''.join(list(filter(lambda l: l != letter, letters))) + ']'
+                regex = remaining_letters + '{'
                 n = 0
                 for c in status:
                     if c == '.':
                         n+=1
                     else:
-                        regex += (str(n) + '}' + c + '.{')
+                        regex += (str(n) + '}' + c + remaining_letters + '{')
                         n = 0
                 if regex.endswith('{'):
                     regex += '0}'
